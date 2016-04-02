@@ -90,10 +90,10 @@ set_target_properties(ReverseTale-CommonServer PROPERTIES
 )
 
 include(CMakePackageConfigHelpers)
-set(config_install_dir lib/cmake/ReverseTale-Common)
-set(version_config ${PROJECT_BINARY_DIR}/ReverseTale-Common-config-version.cmake)
-set(project_config ${PROJECT_BINARY_DIR}/ReverseTale-Common-config.cmake)
-set(targets_export_name ReverseTale-Common-targets)
+set(config_install_dir lib/cmake/ReverseTale-CommonServer)
+set(version_config ${PROJECT_BINARY_DIR}/ReverseTale-CommonServer-config-version.cmake)
+set(project_config ${PROJECT_BINARY_DIR}/ReverseTale-CommonServer-config.cmake)
+set(targets_export_name ReverseTale-CommonServer-targets)
 
 
 # Generate the version, config and target files into the build directory.
@@ -105,9 +105,9 @@ configure_package_config_file(
   ${PROJECT_SOURCE_DIR}/config.cmake.in
   ${project_config}
   INSTALL_DESTINATION ${config_install_dir})
-export(TARGETS ReverseTale-Common FILE ${PROJECT_BINARY_DIR}/${targets_export_name}.cmake)
+export(TARGETS ReverseTale-CommonServer FILE ${PROJECT_BINARY_DIR}/${targets_export_name}.cmake)
 
-install(TARGETS ReverseTale-Common
+install(TARGETS ReverseTale-CommonServer
 	EXPORT ${targets_export_name}
 	RUNTIME DESTINATION bin/
   	LIBRARY DESTINATION lib/

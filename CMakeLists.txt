@@ -4,6 +4,7 @@ project(ReverseTale-CommonServer)
 # ---[ Parse all prefixes
 include(cmake-common/Utils.cmake)
 String2List(${CMAKE_PREFIX_PATH} CMAKE_PREFIX_PATH)
+String2List(${CMAKE_MODULE_PATH} CMAKE_MODULE_PATH)
 
 # ---[ Find all source and header files
 file(GLOB_RECURSE sources_Main      src/*.cpp     src/*.h)

@@ -12,11 +12,14 @@ set(CommonServer_SOURCES
 )
 
 # ---[ Load dependencies
-find_package(LibBSON)
-find_package(LibMongoC)
-find_package(libbsoncxx)
-find_package(libmongocxx)
-find_package(cppformat)
+find_package(LibBSON                REQUIRED)
+find_package(LibMongoC              REQUIRED)
+find_package(libbsoncxx             REQUIRED)
+find_package(libmongocxx            REQUIRED)
+find_package(cppformat              REQUIRED)
+find_package(inih                   REQUIRED)
+find_package(threadpool11           REQUIRED)
+find_package(ReverseTale-Library    REQUIRED)
 
 # ---[ Setup include directories
 set(THIRD_PARTY_INCLUDE

@@ -20,9 +20,7 @@ find_package(cppformat)
 
 # ---[ Setup include directories
 set(THIRD_PARTY_INCLUDE
-    ${CMAKE_SOURCE_DIR}/server/common/src
-    ${CMAKE_SOURCE_DIR}/dep/inih/cpp
-    ${CMAKE_SOURCE_DIR}/dep/threadpool11/threadpool11/include
+    ${CMAKE_SOURCE_DIR}/src
 
     ${LibBSON_INCLUDE_DIRS}
     ${LibMongoC_INCLUDE_DIRS}
@@ -59,6 +57,13 @@ target_link_libraries(ReverseTale-CommonServer
     PUBLIC ${LIBMONGOC_LIBRARY} # Not needed, libmongocxx already links it
     PUBLIC ${LIBBSONCXX_LIBRARY}
     PUBLIC ${LIBMONGOCXX_LIBRARY}
+    PUBLIC inih
+    PUBLIC threadpool11
+    PUBLIC ReverseTale-Library
+)
+
+# ---[ Other projects include dirs
+target_include_directories(ReverseTale-CommonServer
     PUBLIC inih
     PUBLIC threadpool11
     PUBLIC ReverseTale-Library

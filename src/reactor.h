@@ -7,7 +7,8 @@
 #include <Tools/nstring.h>
 #include <Tools/server_socket.h>
 #include <Tools/accepted_socket.h>
-#include <threadpool.h>
+
+#include "threadpool.h"
 
 #ifdef _WIN32
 	#define pollfd WSAPOLLFD

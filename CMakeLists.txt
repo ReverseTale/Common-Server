@@ -7,9 +7,11 @@ String2List(${CMAKE_PREFIX_PATH} CMAKE_PREFIX_PATH)
 String2List(${CMAKE_MODULE_PATH} CMAKE_MODULE_PATH)
 
 # ---[ Find all source and header files
-file(GLOB_RECURSE sources_Main      src/*.cpp     src/*.h)
+file(GLOB_RECURSE sources_Main_H    src/*.h)
+file(GLOB_RECURSE sources_Main_CPP  src/*.cpp)
 set(CommonServer_SOURCES
-    ${sources_Main}
+    ${sources_Main_H}
+    ${sources_Main_CPP}
 )
 
 # ---[ Load dependencies
@@ -20,7 +22,12 @@ find_package(libmongocxx            REQUIRED)
 find_package(cppformat              REQUIRED)
 find_package(inih                   REQUIRED)
 find_package(threadpool11           REQUIRED)
-find_package(ReverseTale-Library    REQUIRED)
+
+if (${ReverseTale_DEV})
+    include_directories(${CMAKE_SOURCE_DIR}/src/Library/include)
+else()
+    find_package(ReverseTale-Library    REQUIRED)
+endif()
 
 # ---[ Setup include directories
 set(THIRD_PARTY_INCLUDE
@@ -48,10 +55,9 @@ add_definitions(-DMONGOCXX_STATIC -DBSONCXX_STATIC)
 add_library(ReverseTale-CommonServer STATIC ${CommonServer_SOURCES})
 add_dependencies(ReverseTale-CommonServer EP_mongo-cxx-driver)
 
-
 # ---[ Find absolute paths to libraries
-find_library(LIBBSON_LIBRARY NAMES bson-static-1.0.lib ${LIBBSON_LIBRARIES} PATHS ${LibBSON_LIBRARY_DIRS})
-find_library(LIBMONGOC_LIBRARY NAMES mongoc-static-1.0.lib ${LIBMONGOC_LIBRARIES} PATHS ${LibMongoC_LIBRARY_DIRS})
+find_library(LIBBSON_LIBRARY NAMES bson-static-1.0.lib ${LIBBSON_LIBRARIES} PATHS ${LIBBSON_LIBRARY_DIRS})
+find_library(LIBMONGOC_LIBRARY NAMES mongoc-static-1.0.lib ${LIBMONGOC_LIBRARIES} PATHS ${LIBMONGOC_LIBRARY_DIRS})
 find_library(LIBBSONCXX_LIBRARY NAMES libmongocxx.lib ${LIBBSONCXX_LIBRARIES} PATHS ${LIBBSONCXX_LIBRARY_DIRS})
 find_library(LIBMONGOCXX_LIBRARY NAMES libbsoncxx.lib ${LIBMONGOCXX_LIBRARIES} PATHS ${LIBMONGOCXX_LIBRARY_DIRS})
 
@@ -61,13 +67,6 @@ target_link_libraries(ReverseTale-CommonServer
     PUBLIC ${LIBMONGOC_LIBRARY} # Not needed, libmongocxx already links it
     PUBLIC ${LIBBSONCXX_LIBRARY}
     PUBLIC ${LIBMONGOCXX_LIBRARY}
-    PUBLIC inih
-    PUBLIC threadpool11
-    PUBLIC ReverseTale-Library
-)
-
-# ---[ Other projects include dirs
-target_include_directories(ReverseTale-CommonServer
     PUBLIC inih
     PUBLIC threadpool11
     PUBLIC ReverseTale-Library
@@ -86,7 +85,7 @@ set_target_properties(ReverseTale-CommonServer PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../lib
 
     INTERFACE_COMPILE_DEFINITIONS "${DEFINITIONS}"
-    INTERFACE_INCLUDE_DIRECTORIES "${THIRD_PARTY_INCLUDE}"
+    INTERFACE_INCLUDE_DIRECTORIES "$<INSTALL_INTERFACE:include>;${LibBSON_INCLUDE_DIRS};${LibMongoC_INCLUDE_DIRS};${LIBBSONCXX_INCLUDE_DIRS};${LIBMONGOCXX_INCLUDE_DIRS}"
 )
 
 include(CMakePackageConfigHelpers)
@@ -115,3 +114,4 @@ install(TARGETS ReverseTale-CommonServer
 
 install(FILES ${project_config} ${version_config} DESTINATION ${config_install_dir})
 install(EXPORT ${targets_export_name} DESTINATION ${config_install_dir})
+install(FILES ${sources_Main_H} DESTINATION include/)

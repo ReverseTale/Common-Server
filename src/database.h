@@ -7,7 +7,6 @@
 
 #include <Tools/random_selector.h>
 
-#include <threadpool.h>
 #include <threadpool11/threadpool11.hpp>
 #include <threadpool11/utility.hpp>
 #include <threadpool11/worker.hpp>
@@ -22,6 +21,7 @@
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
 
+#include "threadpool.h"
 
 using bsoncxx::builder::stream::document;
 using bsoncxx::builder::stream::open_document;

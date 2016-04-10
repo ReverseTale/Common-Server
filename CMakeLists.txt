@@ -19,7 +19,6 @@ find_package(LibBSON                REQUIRED)
 find_package(LibMongoC              REQUIRED)
 find_package(libbsoncxx             REQUIRED)
 find_package(libmongocxx            REQUIRED)
-find_package(cppformat              REQUIRED)
 find_package(inih                   REQUIRED)
 find_package(threadpool11           REQUIRED)
 
@@ -53,21 +52,22 @@ find_library(LIBMONGOCXX_LIBRARY NAMES libbsoncxx.lib ${LIBMONGOCXX_LIBRARIES} P
 
 # ---[ Link all third party libraries
 target_link_libraries(ReverseTale-CommonServer
+    PUBLIC ReverseTale-Library
     PUBLIC ${LIBBSON_LIBRARY} # Not needed, libbsoncxx already links it
     PUBLIC ${LIBMONGOC_LIBRARY} # Not needed, libmongocxx already links it
     PUBLIC ${LIBBSONCXX_LIBRARY}
     PUBLIC ${LIBMONGOCXX_LIBRARY}
     PUBLIC inih
     PUBLIC threadpool11
-    PUBLIC ReverseTale-Library
 )
 
-target_include_directories(ReverseTale-Library
-	PUBLIC ${Boost_INCLUDE_DIR}
+target_include_directories(ReverseTale-CommonServer
+	#PUBLIC "$<TARGET_PROPERTY:ReverseTale-Library,INTERFACE_INCLUDE_DIRECTORIES>"
 	PUBLIC ${LibBSON_INCLUDE_DIRS}
     PUBLIC ${LibMongoC_INCLUDE_DIRS}
     PUBLIC ${LIBBSONCXX_INCLUDE_DIRS}
     PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS}
+    INTERFACE "$<INSTALL_INTERFACE:include>"
 )
 
 # ---[ Set C++11 standard
@@ -82,7 +82,6 @@ set_target_properties(ReverseTale-CommonServer PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../lib
 
     INTERFACE_COMPILE_DEFINITIONS "${DEFINITIONS}"
-    INTERFACE_INCLUDE_DIRECTORIES "$<INSTALL_INTERFACE:include>;${LibBSON_INCLUDE_DIRS};${LibMongoC_INCLUDE_DIRS};${LIBBSONCXX_INCLUDE_DIRS};${LIBMONGOCXX_INCLUDE_DIRS}"
 )
 
 include(CMakePackageConfigHelpers)

@@ -30,18 +30,9 @@ else()
 endif()
 
 # ---[ Setup include directories
-set(THIRD_PARTY_INCLUDE
-    ${CMAKE_SOURCE_DIR}/src
-
-    ${LibBSON_INCLUDE_DIRS}
-    ${LibMongoC_INCLUDE_DIRS}
-    ${LIBBSONCXX_INCLUDE_DIRS}
-    ${LIBMONGOCXX_INCLUDE_DIRS}
-)
-
 include_directories(
     ${CMAKE_BINARY_DIR}
-    ${THIRD_PARTY_INCLUDE}
+    ${CMAKE_SOURCE_DIR}/src
 )
 
 # ---[ Setup some definitions
@@ -71,12 +62,19 @@ target_link_libraries(ReverseTale-CommonServer
     PUBLIC ReverseTale-Library
 )
 
+target_include_directories(ReverseTale-Library
+	PUBLIC ${Boost_INCLUDE_DIR}
+	PUBLIC ${LibBSON_INCLUDE_DIRS}
+    PUBLIC ${LibMongoC_INCLUDE_DIRS}
+    PUBLIC ${LIBBSONCXX_INCLUDE_DIRS}
+    PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS}
+)
+
 # ---[ Set C++11 standard
 set_property(TARGET ReverseTale-CommonServer PROPERTY CXX_STANDARD 11)
 target_compile_features(ReverseTale-CommonServer PRIVATE cxx_decltype cxx_nullptr cxx_variadic_templates)
 
 # ---[ Setup output directory and include directories
-separate_arguments(THIRD_PARTY_INCLUDE)
 set_target_properties(ReverseTale-CommonServer PROPERTIES
     OUTPUT_NAME CommonServer
     ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../lib

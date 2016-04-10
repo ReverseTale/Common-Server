@@ -53,7 +53,6 @@ add_definitions(-DMONGOCXX_STATIC -DBSONCXX_STATIC)
 
 # ---[ Add library as static and add dependencies
 add_library(ReverseTale-CommonServer STATIC ${CommonServer_SOURCES})
-add_dependencies(ReverseTale-CommonServer EP_mongo-cxx-driver)
 
 # ---[ Find absolute paths to libraries
 find_library(LIBBSON_LIBRARY NAMES bson-static-1.0.lib ${LIBBSON_LIBRARIES} PATHS ${LIBBSON_LIBRARY_DIRS})

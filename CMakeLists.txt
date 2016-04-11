@@ -57,9 +57,12 @@ target_link_libraries(ReverseTale-CommonServer
     PUBLIC ${LIBMONGOC_LIBRARY} # Not needed, libmongocxx already links it
     PUBLIC ${LIBBSONCXX_LIBRARY}
     PUBLIC ${LIBMONGOCXX_LIBRARY}
-    PUBLIC inih
-    PUBLIC threadpool11
+    PUBLIC "$<TARGET_FILE:inih>"
+    PUBLIC "$<TARGET_FILE:threadpool11>"
 )
+
+get_target_property(INIH_INCLUDE_DIR inih INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(THREADPOOL11_INCLUDE_DIR threadpool11 INTERFACE_INCLUDE_DIRECTORIES)
 
 target_include_directories(ReverseTale-CommonServer
 	#PUBLIC "$<TARGET_PROPERTY:ReverseTale-Library,INTERFACE_INCLUDE_DIRECTORIES>"
@@ -67,6 +70,8 @@ target_include_directories(ReverseTale-CommonServer
     PUBLIC ${LibMongoC_INCLUDE_DIRS}
     PUBLIC ${LIBBSONCXX_INCLUDE_DIRS}
     PUBLIC ${LIBMONGOCXX_INCLUDE_DIRS}
+    PUBLIC ${INIH_INCLUDE_DIR}
+    PUBLIC ${THREADPOOL11_INCLUDE_DIR}
     INTERFACE "$<INSTALL_INTERFACE:include>"
 )
 

@@ -109,6 +109,14 @@ public:
 							{
 								reactor->_clients[i]->onRead(packet);
 							}
+							else
+							{
+								if (reactor->_clients[i]->lastError() != SocketError::NONE)
+								{
+									reactor->_clients[i]->close();
+									continue;
+								}
+							}
 						}
 					}
 

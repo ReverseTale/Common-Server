@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <chrono>
+#include <thread>
 
 #include <Tools/random_selector.h>
 
@@ -132,6 +133,7 @@ private:
 	mongocxx::client _client;
 	mongocxx::database _db;
 	boost::lockfree::queue<InternalWork*> _queue;
+	std::thread _databaseThread;
 	std::atomic<bool> _stop;
 
 	mutable std::mutex _work_signal_mutex;

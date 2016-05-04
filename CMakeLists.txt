@@ -35,11 +35,11 @@ include_directories(
 )
 
 # ---[ Setup some definitions
-set(DEFINITIONS "MONGOCXX_STATIC=1 BSONCXX_STATIC=1")
+set(DEFINITIONS "MONGOCXX_STATIC=1 BSONCXX_STATIC=1 _SCL_SECURE_NO_WARNINGS=1")
 #if (NOT ${DEBUG})
 #   set(DEFINITIONS "${DEFINITIONS} NDEBUG=1")
 #endif()
-add_definitions(-DMONGOCXX_STATIC -DBSONCXX_STATIC)
+add_definitions(-DMONGOCXX_STATIC -DBSONCXX_STATIC -D_SCL_SECURE_NO_WARNINGS)
 
 # ---[ Add library as static and add dependencies
 add_library(ReverseTale-CommonServer STATIC ${CommonServer_SOURCES})

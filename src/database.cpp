@@ -10,5 +10,5 @@ Database::Database(mongocxx::uri uri, std::string& database):
 	_queue(256), // TODO: Configurable queue size,
 	_stop(false)
 {
-	gPool->postWork<void>([this]() { run(); });
+	_databaseThread = std::thread([this] { run(); });
 }

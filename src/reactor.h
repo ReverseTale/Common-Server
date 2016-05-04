@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <string.h>
+#include <thread>
 
 #include <Tools/socket.h>
 #include <Tools/nstring.h>
@@ -44,7 +45,7 @@ public:
 	{
 		if (_socket->serve(port))
 		{
-			ThreadPool::get()->pool()->postWork<void>([this] {
+			_selectorThread = std::thread([this] {
 				loopSockets(this);
 			});
 
@@ -148,4 +149,5 @@ private:
 
 	pollfd* _polls;
 	ClientType** _clients;
+	std::thread _selectorThread;
 };

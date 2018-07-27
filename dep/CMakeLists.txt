@@ -11,6 +11,14 @@
         CONFIGURE_ARGUMENTS ${LIBBSON_CONFIGURE}
     )
 
+    # Libbson requires additional steps, it does not follow standard practices...
+    AddNonStandardPackage(
+        TARGET ReverseTale-CommonServer
+        PACKAGE libbson-static-1.0
+        LIBRARY_VARIABLE BSON_STATIC_LIBRARY
+        INCLUDE_VARIABLE BSON_STATIC_INDLUDE_DIRS
+    )
+
 #######################
 # MONGOC 
 
@@ -28,6 +36,14 @@
         CONFIGURE_ARGUMENTS ${MONGOC_CONFIGURE}
     )
 
+    # Libmongoc requires additional steps, it does not follow standard practices...
+    AddNonStandardPackage(
+        TARGET ReverseTale-CommonServer
+        PACKAGE libmongoc-static-1.0
+        LIBRARY_VARIABLE MONGOC_STATIC_LIBRARY
+        INCLUDE_VARIABLE MONGOC_STATIC_INDLUDE_DIRS
+    )
+
 #######################
 # MONGOCXX
 
@@ -40,7 +56,16 @@
         TARGET ReverseTale-CommonServer
         ENSURE_ORDER
         MODULE "mongodb/mongo-cxx-driver:r3.2.0"
-        CONFIGURE_ARGUMENTS ${MONGOCXX_CONFIGURE}
+        CONFIGURE_ARGUMENTS ${MONGOCXX_CONFIGURE} 
+    )
+
+    # Mongocxx requires additional steps, it does not follow standard practices...
+    AddNonStandardPackage(
+        TARGET ReverseTale-CommonServer
+        PACKAGE libmongocxx-3.2.0
+        CONFIG libmongocxx
+        LIBRARY_VARIABLE LIBMONGOCXX_LIBRARIES
+        INCLUDE_VARIABLE LIBMONGOCXX_INCLUDE_DIRS
     )
     
 #######################
@@ -54,6 +79,7 @@
         TARGET ReverseTale-CommonServer
         MODULE "benhoyt/inih:0c3f8ea80ca2c8be8995a0b7b4e84af1641a4dd2"
         CONFIGURE_STEPS ${INIH_PATCHES}
+        INSTALL_NAME inih
     )
 
 #######################
@@ -62,6 +88,7 @@
     RequireExternal(
         TARGET ReverseTale-CommonServer
         MODULE "gpascualg/threadpool11:2.0"
+        INSTALL_NAME threadpool11
     )
 
 #######################
@@ -71,4 +98,5 @@
         TARGET ReverseTale-CommonServer
         MODULE "ReverseTale/Library:master"
         ENSURE_ORDER
+        INSTALL_NAME ReverseTale-Library
     )

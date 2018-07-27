@@ -32,7 +32,18 @@ if (ReverseTale-CommonServer_IS_RESOLVED)
 		TARGET ReverseTale-CommonServer
 		INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
-    
+	
+	# MONGO CXX wrappers are little bit special
+	ExternalInstallDirectory(VARIABLE "EXTERNAL_DIRECTORY")
+	AddToIncludes(
+		TARGET ReverseTale-CommonServer
+		INC_PATH ${EXTERNAL_DIRECTORY}/include/bsoncxx/v_noabi
+	)
+	AddToIncludes(
+		TARGET ReverseTale-CommonServer
+		INC_PATH ${EXTERNAL_DIRECTORY}/include/mongocxx/v_noabi
+    )
+	
     # ---[ Setup some definitions
     set(DEFINITIONS "MONGOCXX_STATIC=1 BSONCXX_STATIC=1 _SCL_SECURE_NO_WARNINGS=1")
 

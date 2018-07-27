@@ -71,8 +71,10 @@
 #######################
 # INIH
     set(INIH_PATCHES
-        "git apply --whitespace=fix ${CMAKE_SOURCE_DIR}/cmake/Patches/01-inih-cmake.patch"
-        "git apply --whitespace=fix ${CMAKE_SOURCE_DIR}/cmake/Patches/02-inih-has_key.patch"
+        "git stash"
+        "git clean -fx"
+        "git apply --reject --whitespace=fix ${CMAKE_SOURCE_DIR}/cmake/Patches/01-inih-cmake.patch"
+        "git apply --reject --whitespace=fix ${CMAKE_SOURCE_DIR}/cmake/Patches/02-inih-has_key.patch"
     )
 
     RequireExternal(

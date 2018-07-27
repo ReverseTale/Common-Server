@@ -35,7 +35,7 @@ if (ReverseTale-CommonServer_IS_RESOLVED)
     )
 	
     # ---[ Setup some definitions
-    set(DEFINITIONS "MONGOCXX_STATIC" "BSONCXX_STATIC" "_SCL_SECURE_NO_WARNINGS")
+    set(DEFINITIONS "BSONSTATIC" "MONGOCXX_STATIC" "BSONCXX_STATIC" "_SCL_SECURE_NO_WARNINGS")
 
 	BuildNow(
 		TARGET ReverseTale-CommonServer

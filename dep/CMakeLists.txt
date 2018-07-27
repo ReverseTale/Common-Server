@@ -50,6 +50,7 @@
     set(MONGOCXX_CONFIGURE
         "-DENABLE_TESTS=OFF"     # TODO: No longer can be disabled
         "-DENABLE_EXAMPLES=OFF"  # TODO: No longer can be disabled
+        "-DBUILD_SHARED_LIBS=OFF"
     )
 
     RequireExternal(
@@ -62,10 +63,10 @@
     # Mongocxx requires additional steps, it does not follow standard practices...
     AddNonStandardPackage(
         TARGET ReverseTale-CommonServer
-        PACKAGE libmongocxx-3.2.0
-        CONFIG libmongocxx
-        LIBRARY_VARIABLE LIBMONGOCXX_LIBRARIES
-        INCLUDE_VARIABLE LIBMONGOCXX_INCLUDE_DIRS
+        PACKAGE libmongocxx-static-3.2.0
+        CONFIG libmongocxx-static
+        LIBRARY_VARIABLE LIBMONGOCXX_STATIC_LIBRARIES
+        INCLUDE_VARIABLE LIBMONGOCXX_STATIC_INCLUDE_DIRS
     )
     
 #######################

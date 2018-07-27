@@ -1,4 +1,4 @@
-#include "database.h"
+#include "CommonServer/database.h"
 
 mongocxx::instance* Database::_mongoInstance = nullptr;
 std::map<std::string, std::vector<Database*> > Database::_instances{};

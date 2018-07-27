@@ -22,7 +22,7 @@
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
 
-#include "threadpool.h"
+#include "CommonServer/threadpool.h"
 
 using bsoncxx::builder::stream::document;
 using bsoncxx::builder::stream::open_document;

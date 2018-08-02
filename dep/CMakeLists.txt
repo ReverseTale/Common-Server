@@ -1,6 +1,23 @@
-
 # Git is required for patches
 find_package(Git REQUIRED)
+
+#######################
+# LIBBSON
+     set(LIBBSON_CONFIGURE
+        "-DENABLE_TESTS=OFF"
+    )
+     RequireExternal(
+        TARGET ReverseTale-CommonServer
+        MODULE "mongodb/libbson:r1.9"
+        CONFIGURE_ARGUMENTS ${LIBBSON_CONFIGURE}
+    )
+     # Libbson requires additional steps, it does not follow standard practices...
+    AddNonStandardPackage(
+        TARGET ReverseTale-CommonServer
+        PACKAGE libbson-static-1.0
+        LIBRARY_VARIABLE BSON_STATIC_LIBRARIES
+        INCLUDE_VARIABLE BSON_STATIC_INDLUDE_DIRS
+    )
 
 #######################
 # MONGOC 
@@ -15,7 +32,7 @@ find_package(Git REQUIRED)
     RequireExternal(
         TARGET ReverseTale-CommonServer
         ENSURE_ORDER
-        MODULE "mongodb/mongo-c-driver:r1.10"
+        MODULE "mongodb/mongo-c-driver:r1.9"
         CONFIGURE_ARGUMENTS ${MONGOC_CONFIGURE}
     )
 
@@ -34,7 +51,7 @@ find_package(Git REQUIRED)
     set(MONGOCXX_PATCHES
         "${GIT_EXECUTABLE} stash"
         "${GIT_EXECUTABLE} clean -fx"
-        "${GIT_EXECUTABLE} apply --reject --whitespace=fix ${CMAKE_SOURCE_DIR}/cmake/Patches/03-mongocxx-tests.patch"
+        # "${GIT_EXECUTABLE} apply --reject --whitespace=fix ${CMAKE_SOURCE_DIR}/cmake/Patches/03-mongocxx-tests.patch"
     )
 
     set(MONGOCXX_CONFIGURE
@@ -46,7 +63,7 @@ find_package(Git REQUIRED)
     RequireExternal(
         TARGET ReverseTale-CommonServer
         ENSURE_ORDER
-        MODULE "mongodb/mongo-cxx-driver:r3.3.0"
+        MODULE "mongodb/mongo-cxx-driver:r3.2.0"
         CONFIGURE_STEPS ${MONGOCXX_PATCHES}
         CONFIGURE_ARGUMENTS ${MONGOCXX_CONFIGURE} 
         BUILD_TARGET mongocxx

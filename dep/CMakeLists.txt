@@ -15,7 +15,7 @@ find_package(Git REQUIRED)
     RequireExternal(
         TARGET ReverseTale-CommonServer
         ENSURE_ORDER
-        MODULE "mongodb/mongo-c-driver:r1.12"
+        MODULE "mongodb/mongo-c-driver:r1.10"
         CONFIGURE_ARGUMENTS ${MONGOC_CONFIGURE}
     )
 
@@ -46,7 +46,7 @@ find_package(Git REQUIRED)
     RequireExternal(
         TARGET ReverseTale-CommonServer
         ENSURE_ORDER
-        MODULE "mongodb/mongo-cxx-driver:r3.3.1"
+        MODULE "mongodb/mongo-cxx-driver:r3.3.0"
         CONFIGURE_STEPS ${MONGOCXX_PATCHES}
         CONFIGURE_ARGUMENTS ${MONGOCXX_CONFIGURE} 
         BUILD_TARGET mongocxx

@@ -1,23 +1,6 @@
-#######################
-# LIBBSON
 
-    set(LIBBSON_CONFIGURE
-        "-DENABLE_TESTS=OFF"
-    )
-
-    RequireExternal(
-        TARGET ReverseTale-CommonServer
-        MODULE "mongodb/libbson:r1.9"
-        CONFIGURE_ARGUMENTS ${LIBBSON_CONFIGURE}
-    )
-
-    # Libbson requires additional steps, it does not follow standard practices...
-    AddNonStandardPackage(
-        TARGET ReverseTale-CommonServer
-        PACKAGE libbson-static-1.0
-        LIBRARY_VARIABLE BSON_STATIC_LIBRARY
-        INCLUDE_VARIABLE BSON_STATIC_INDLUDE_DIRS
-    )
+# Git is required for patches
+find_package(Git REQUIRED)
 
 #######################
 # MONGOC 
@@ -32,7 +15,7 @@
     RequireExternal(
         TARGET ReverseTale-CommonServer
         ENSURE_ORDER
-        MODULE "mongodb/mongo-c-driver:r1.9"
+        MODULE "mongodb/mongo-c-driver:r1.12"
         CONFIGURE_ARGUMENTS ${MONGOC_CONFIGURE}
     )
 
@@ -47,6 +30,12 @@
 #######################
 # MONGOCXX
 
+    set(MONGOCXX_PATCHES
+        "${GIT_EXECUTABLE} stash"
+        "${GIT_EXECUTABLE} clean -fx"
+        "${GIT_EXECUTABLE} apply --reject --whitespace=fix ${CMAKE_SOURCE_DIR}/cmake/Patches/03-mongocxx-tests.patch"
+    )
+
     set(MONGOCXX_CONFIGURE
         "-DENABLE_TESTS=OFF"     # TODO: No longer can be disabled
         "-DENABLE_EXAMPLES=OFF"  # TODO: No longer can be disabled
@@ -56,14 +45,16 @@
     RequireExternal(
         TARGET ReverseTale-CommonServer
         ENSURE_ORDER
-        MODULE "mongodb/mongo-cxx-driver:r3.2.0"
+        MODULE "mongodb/mongo-cxx-driver:r3.3.1"
+        CONFIGURE_STEPS ${MONGOCXX_PATCHES}
         CONFIGURE_ARGUMENTS ${MONGOCXX_CONFIGURE} 
+        BUILD_TARGET mongocxx
     )
 
     # Mongocxx requires additional steps, it does not follow standard practices...
     AddNonStandardPackage(
         TARGET ReverseTale-CommonServer
-        PACKAGE libmongocxx-static-3.2.0
+        PACKAGE libmongocxx-static-3.3.1
         CONFIG libmongocxx-static
         LIBRARY_VARIABLE LIBMONGOCXX_STATIC_LIBRARIES
         INCLUDE_VARIABLE LIBMONGOCXX_STATIC_INCLUDE_DIRS
@@ -72,10 +63,10 @@
 #######################
 # INIH
     set(INIH_PATCHES
-        "git stash"
-        "git clean -fx"
-        "git apply --reject --whitespace=fix ${CMAKE_SOURCE_DIR}/cmake/Patches/01-inih-cmake.patch"
-        "git apply --reject --whitespace=fix ${CMAKE_SOURCE_DIR}/cmake/Patches/02-inih-has_key.patch"
+        "${GIT_EXECUTABLE} stash"
+        "${GIT_EXECUTABLE} clean -fx"
+        "${GIT_EXECUTABLE} apply --reject --whitespace=fix ${CMAKE_SOURCE_DIR}/cmake/Patches/01-inih-cmake.patch"
+        "${GIT_EXECUTABLE} apply --reject --whitespace=fix ${CMAKE_SOURCE_DIR}/cmake/Patches/02-inih-has_key.patch"
     )
 
     RequireExternal(

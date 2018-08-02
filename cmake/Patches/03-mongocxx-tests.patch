@@ -1,0 +1,296 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c6f56e4..9f6b0c6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -74,6 +74,9 @@ include(InstallRequiredSystemLibraries)
+ # Allow the user to decide whether to build the shared libaries or the static libraries.
+ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+ 
++# Allow the user to toggle testing
++option(BUILD_TESTS "Build tests" OFF)
++
+ # If the user did not customize the install prefix,
+ # set it to live under build so we don't inadverently pollute /usr/local
+ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+@@ -147,10 +150,15 @@ add_custom_target(docs
+ 
+ set(THIRD_PARTY_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/third_party)
+ 
+-enable_testing()
++if (BUILD_TESTS)
++    enable_testing()
++endif()
+ 
+ add_subdirectory(src)
+ 
+-add_subdirectory(examples EXCLUDE_FROM_ALL)
++if (BUILD_TESTS)
++    add_subdirectory(examples EXCLUDE_FROM_ALL)
++
++    add_subdirectory(benchmark EXCLUDE_FROM_ALL)
++endif()
+ 
+-add_subdirectory(benchmark EXCLUDE_FROM_ALL)
+diff --git a/src/bsoncxx/CMakeLists.txt b/src/bsoncxx/CMakeLists.txt
+index 2310905..07d1aad 100644
+--- a/src/bsoncxx/CMakeLists.txt
++++ b/src/bsoncxx/CMakeLists.txt
+@@ -127,32 +127,46 @@ endif()
+ add_library(bsoncxx
+     ${bsoncxx_sources}
+ )
+-add_library(bsoncxx_testing
+-    ${bsoncxx_sources}
+-)
+-target_compile_definitions(bsoncxx_testing PUBLIC BSONCXX_TESTING)
+ 
+-set_target_properties(bsoncxx_testing PROPERTIES
+-    OUTPUT_NAME bsoncxx-testing
+-)
++if (BUILD_TESTS)
++    add_library(bsoncxx_testing
++        ${bsoncxx_sources}
++    )
++    target_compile_definitions(bsoncxx_testing PUBLIC BSONCXX_TESTING)
++
++    set_target_properties(bsoncxx_testing PROPERTIES
++        OUTPUT_NAME bsoncxx-testing
++    )
++endif()
+ 
+ if (BUILD_SHARED_LIBS)
+     set_target_properties(bsoncxx PROPERTIES
+         OUTPUT_NAME bsoncxx
+     )
+ 
+-    foreach (TARGET bsoncxx bsoncxx_testing)
+-        set_target_properties(${TARGET} PROPERTIES
++    set_target_properties(bsoncxx PROPERTIES
++        VERSION ${BSONCXX_VERSION}
++        DEFINE_SYMBOL BSONCXX_EXPORT
++        CXX_VISIBILITY_PRESET hidden
++        VISIBILITY_INLINES_HIDDEN ON
++        SOVERSION ${BSONCXX_ABI_VERSION}
++    )
++
++    if (BUILD_TESTS)
++        set_target_properties(bsoncxx_testing PROPERTIES
+             VERSION ${BSONCXX_VERSION}
+             DEFINE_SYMBOL BSONCXX_EXPORT
+             CXX_VISIBILITY_PRESET hidden
+             VISIBILITY_INLINES_HIDDEN ON
+             SOVERSION ${BSONCXX_ABI_VERSION}
+         )
+-    endforeach(TARGET)
++    endif()
+ else()
+     target_compile_definitions(bsoncxx PUBLIC BSONCXX_STATIC)
+-    target_compile_definitions(bsoncxx_testing PUBLIC BSONCXX_STATIC)
++
++    if (BUILD_TESTS)
++        target_compile_definitions(bsoncxx_testing PUBLIC BSONCXX_STATIC)
++    endif()
+ 
+     set_target_properties(bsoncxx PROPERTIES
+         OUTPUT_NAME bsoncxx-static
+@@ -167,37 +181,53 @@ generate_export_header(bsoncxx
+     STATIC_DEFINE BSONCXX_STATIC
+ )
+ 
+-generate_export_header(bsoncxx_testing
+-    BASE_NAME BSONCXX
+-    EXPORT_MACRO_NAME BSONCXX_API
+-    NO_EXPORT_MACRO_NAME BSONCXX_PRIVATE
+-    EXPORT_FILE_NAME config/export.hpp
+-    STATIC_DEFINE BSONCXX_STATIC
+-)
++if (BUILD_TESTS)
++    generate_export_header(bsoncxx_testing
++        BASE_NAME BSONCXX
++        EXPORT_MACRO_NAME BSONCXX_API
++        NO_EXPORT_MACRO_NAME BSONCXX_PRIVATE
++        EXPORT_FILE_NAME config/export.hpp
++        STATIC_DEFINE BSONCXX_STATIC
++    )
++endif()
+ 
+ if (BSONCXX_POLY_USE_MNMLSTC AND NOT BSONCXX_POLY_USE_SYSTEM_MNMLSTC)
+     add_dependencies(bsoncxx EP_mnmlstc_core)
+-    add_dependencies(bsoncxx_testing EP_mnmlstc_core)
++    if (BUILD_TESTS)
++        add_dependencies(bsoncxx_testing EP_mnmlstc_core)
++    endif()
+     ExternalProject_Get_Property(EP_mnmlstc_core source_dir)
+     target_include_directories(bsoncxx PUBLIC ${source_dir}/include)
+-    target_include_directories(bsoncxx_testing PUBLIC ${source_dir}/include)
++    if (BUILD_TESTS)
++        target_include_directories(bsoncxx_testing PUBLIC ${source_dir}/include)
++    endif()
+ elseif (BSONCXX_POLY_USE_BOOST)
+     target_include_directories(bsoncxx PUBLIC ${Boost_INCLUDE_DIRS})
+-    target_include_directories(bsoncxx_testing PUBLIC ${Boost_INCLUDE_DIRS})
++    if (BUILD_TESTS)
++        target_include_directories(bsoncxx_testing PUBLIC ${Boost_INCLUDE_DIRS})
++    endif()
+ endif()
+ 
+ target_include_directories(bsoncxx PRIVATE ${libbson_include_directories})
+-target_include_directories(bsoncxx_testing PRIVATE ${libbson_include_directories})
++if (BUILD_TESTS)
++    target_include_directories(bsoncxx_testing PRIVATE ${libbson_include_directories})
++endif()
+ 
+ target_compile_definitions(bsoncxx PRIVATE ${libbson_definitions})
+-target_compile_definitions(bsoncxx_testing PRIVATE ${libbson_definitions})
++if (BUILD_TESTS)
++    target_compile_definitions(bsoncxx_testing PRIVATE ${libbson_definitions})
++endif()
+ 
+ if (BUILD_SHARED_LIBS)
+     target_link_libraries(bsoncxx PRIVATE ${libbson_libraries})
+-    target_link_libraries(bsoncxx_testing PRIVATE ${libbson_libraries})
++    if (BUILD_TESTS)
++        target_link_libraries(bsoncxx_testing PRIVATE ${libbson_libraries})
++    endif()
+ else()
+     target_link_libraries(bsoncxx ${libbson_libraries})
+-    target_link_libraries(bsoncxx_testing ${libbson_libraries})
++    if (BUILD_TESTS)
++        target_link_libraries(bsoncxx_testing ${libbson_libraries})
++    endif()
+ endif()
+ 
+ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+@@ -249,4 +279,6 @@ install(
+   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PKG}-${BSONCXX_VERSION}
+ )
+ 
+-add_subdirectory(test)
++if (BUILD_TESTS)
++    add_subdirectory(test)
++endif()
+diff --git a/src/mongocxx/CMakeLists.txt b/src/mongocxx/CMakeLists.txt
+index 65e7f8c..4e2909a 100644
+--- a/src/mongocxx/CMakeLists.txt
++++ b/src/mongocxx/CMakeLists.txt
+@@ -128,36 +128,49 @@ include_directories(
+ add_library(mongocxx
+     ${mongocxx_sources}
+ )
+-add_library(mongocxx_mocked
+-    ${mongocxx_sources}
+-)
+-target_compile_definitions(mongocxx_mocked PUBLIC MONGOCXX_TESTING)
+ 
+-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+-    target_compile_options(mongocxx_mocked PRIVATE /bigobj)
+-endif()
++if (BUILD_TESTS)
++    add_library(mongocxx_mocked
++        ${mongocxx_sources}
++    )
++    target_compile_definitions(mongocxx_mocked PUBLIC MONGOCXX_TESTING)
+ 
+-set_target_properties(mongocxx_mocked PROPERTIES
+-    OUTPUT_NAME mongocxx-mocked
+-)
++    if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
++        target_compile_options(mongocxx_mocked PRIVATE /bigobj)
++    endif()
++
++    set_target_properties(mongocxx_mocked PROPERTIES
++        OUTPUT_NAME mongocxx-mocked
++    )
++endif()
+ 
+ if (BUILD_SHARED_LIBS)
+     set_target_properties(mongocxx PROPERTIES
+         OUTPUT_NAME mongocxx
+     )
+ 
+-    foreach (TARGET mongocxx mongocxx_mocked)
+-        set_target_properties (${TARGET} PROPERTIES
++    set_target_properties (mongocxx PROPERTIES
++        VERSION ${MONGOCXX_VERSION}
++        DEFINE_SYMBOL MONGOCXX_EXPORTS
++        CXX_VISIBILITY_PRESET hidden
++        VISIBILITY_INLINES_HIDDEN ON
++        SOVERSION ${MONGOCXX_ABI_VERSION}
++    )
++
++    if (BUILD_TESTS)
++        set_target_properties (mongocxx_mocked PROPERTIES
+             VERSION ${MONGOCXX_VERSION}
+             DEFINE_SYMBOL MONGOCXX_EXPORTS
+             CXX_VISIBILITY_PRESET hidden
+             VISIBILITY_INLINES_HIDDEN ON
+             SOVERSION ${MONGOCXX_ABI_VERSION}
+         )
+-    endforeach(TARGET)
++    endif()
+ else()
+     target_compile_definitions(mongocxx PUBLIC MONGOCXX_STATIC)
+-    target_compile_definitions(mongocxx_mocked PUBLIC MONGOCXX_STATIC)
++    if (BUILD_TESTS)
++        target_compile_definitions(mongocxx_mocked PUBLIC MONGOCXX_STATIC)
++    endif()
+ 
+     set_target_properties(mongocxx PROPERTIES
+         OUTPUT_NAME mongocxx-static
+@@ -171,26 +184,35 @@ generate_export_header(mongocxx
+     EXPORT_FILE_NAME config/export.hpp
+     STATIC_DEFINE MONGOCXX_STATIC
+ )
+-generate_export_header(mongocxx_mocked
+-    BASE_NAME MONGOCXX
+-    EXPORT_MACRO_NAME MONGOCXX_API
+-    NO_EXPORT_MACRO_NAME MONGOCXX_PRIVATE
+-    EXPORT_FILE_NAME config/export.hpp
+-    STATIC_DEFINE MONGOCXX_STATIC
+-)
+ 
+-target_include_directories(mongocxx PRIVATE ${libmongoc_include_directories})
+-target_include_directories(mongocxx_mocked PRIVATE ${libmongoc_include_directories})
++if (BUILD_TESTS)
++    generate_export_header(mongocxx_mocked
++        BASE_NAME MONGOCXX
++        EXPORT_MACRO_NAME MONGOCXX_API
++        NO_EXPORT_MACRO_NAME MONGOCXX_PRIVATE
++        EXPORT_FILE_NAME config/export.hpp
++        STATIC_DEFINE MONGOCXX_STATIC
++    )
++endif()
+ 
++target_include_directories(mongocxx PRIVATE ${libmongoc_include_directories})
++if (BUILD_TESTS)
++    target_include_directories(mongocxx_mocked PRIVATE ${libmongoc_include_directories})
++endif()
+ target_compile_definitions(mongocxx PRIVATE ${libmongoc_definitions})
+-target_compile_definitions(mongocxx_mocked PRIVATE ${libmongoc_definitions})
+-
++if (BUILD_TESTS)
++    target_compile_definitions(mongocxx_mocked PRIVATE ${libmongoc_definitions})
++endif()
+ if (BUILD_SHARED_LIBS)
+     target_link_libraries(mongocxx PUBLIC bsoncxx PRIVATE ${libmongoc_libraries})
+-    target_link_libraries(mongocxx_mocked PUBLIC bsoncxx PRIVATE ${libmongoc_libraries})
++    if (BUILD_TESTS)
++        target_link_libraries(mongocxx_mocked PUBLIC bsoncxx PRIVATE ${libmongoc_libraries})
++    endif()
+ else()
+     target_link_libraries(mongocxx bsoncxx ${libmongoc_libraries})
+-    target_link_libraries(mongocxx_mocked bsoncxx ${libmongoc_libraries})
++    if (BUILD_TESTS)
++        target_link_libraries(mongocxx_mocked bsoncxx ${libmongoc_libraries})
++    endif()
+ endif()
+ 
+ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+@@ -242,4 +264,6 @@ install(
+   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PKG}-${MONGOCXX_VERSION}
+ )
+ 
+-add_subdirectory(test)
++if (BUILD_TESTS)
++    add_subdirectory(test)
++endif()

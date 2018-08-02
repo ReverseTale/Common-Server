@@ -32,7 +32,7 @@ if (ReverseTale-CommonServer_IS_RESOLVED)
 	AddToIncludes(
 		TARGET ReverseTale-CommonServer
 		INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include
-    )
+	)
 
 	BuildNow(
 		TARGET ReverseTale-CommonServer

@@ -33,9 +33,6 @@ if (ReverseTale-CommonServer_IS_RESOLVED)
 		TARGET ReverseTale-CommonServer
 		INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
-	
-    # ---[ Setup some definitions
-    set(DEFINITIONS "BSONSTATIC" "MONGOCXX_STATIC" "BSONCXX_STATIC" "_SCL_SECURE_NO_WARNINGS")
 
 	BuildNow(
 		TARGET ReverseTale-CommonServer

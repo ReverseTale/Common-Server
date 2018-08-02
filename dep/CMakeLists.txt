@@ -23,7 +23,7 @@ find_package(Git REQUIRED)
     AddNonStandardPackage(
         TARGET ReverseTale-CommonServer
         PACKAGE libmongoc-static-1.0
-        LIBRARY_VARIABLE MONGOC_STATIC_LIBRARY
+        LIBRARY_VARIABLE MONGOC_STATIC_LIBRARIES
         INCLUDE_VARIABLE MONGOC_STATIC_INDLUDE_DIRS
         DEFINITIONS_VARIABLE MONGOC_STATIC_DEFINITIONS
     )
@@ -55,8 +55,7 @@ find_package(Git REQUIRED)
     # Mongocxx requires additional steps, it does not follow standard practices...
     AddNonStandardPackage(
         TARGET ReverseTale-CommonServer
-        PACKAGE libmongocxx-static-3.3.1
-        CONFIG libmongocxx-static
+        PACKAGE libmongocxx-static
         LIBRARY_VARIABLE LIBMONGOCXX_STATIC_LIBRARIES
         INCLUDE_VARIABLE LIBMONGOCXX_STATIC_INCLUDE_DIRS
         DEFINITIONS_VARIABLE LIBMONGOCXX_STATIC_DEFINITIONS

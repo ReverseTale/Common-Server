@@ -36,7 +36,6 @@ if (ReverseTale-CommonServer_IS_RESOLVED)
 
 	BuildNow(
 		TARGET ReverseTale-CommonServer
-		DEFINES ${DEFINITIONS}
 		STATIC_LIB
 		OUTPUT_NAME CommonServer
 		C++11

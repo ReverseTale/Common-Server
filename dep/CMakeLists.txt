@@ -92,4 +92,5 @@ find_package(Git REQUIRED)
         MODULE "ReverseTale/Library:master"
         ENSURE_ORDER
         INSTALL_NAME ReverseTale-Library
+        ALWAYS_BUILD
     )

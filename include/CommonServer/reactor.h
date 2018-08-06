@@ -23,7 +23,8 @@ public:
 	Reactor(ServerSocket* socket, int maxConnections, int timeout) :
 		_socket(socket),
 		_maxConnections(maxConnections),
-		_timeout(timeout)
+		_timeout(timeout),
+	        _running(true)
 	{
 		_polls = new pollfd[maxConnections + 1];
 		memset(_polls, 0, (maxConnections + 1) * sizeof(pollfd));
